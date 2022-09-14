@@ -2,6 +2,7 @@ package ru.job4j.concurrent.net;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 
 public class Wget implements Runnable {
@@ -29,14 +30,17 @@ public class Wget implements Runnable {
                 bytesWrite += bytesRead;
                 if (bytesWrite >= speed) {
                     long duration = System.currentTimeMillis() - start;
-                    long sleepTime = bytesWrite / speed * 1000L - duration;
-                    Thread.sleep(sleepTime);
+                    if (duration < 1000) {
+                        Thread.sleep(1000 - duration);
+                    }
                     bytesWrite = 0;
                     start = System.currentTimeMillis();
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
