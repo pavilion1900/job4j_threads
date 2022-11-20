@@ -35,12 +35,7 @@ public class ParallelSearch<T> extends RecursiveTask<Integer> {
 
     public static <T> int runSearch(T[] array, T value) {
         ForkJoinPool forkJoinPool = new ForkJoinPool();
-        Integer index = forkJoinPool.invoke(
-                new ParallelSearch<>(array, 0, array.length - 1, value));
-        if (index == -1) {
-            throw new IndexNotFoundException("Value " + value + " not found");
-        }
-        return index;
+        return forkJoinPool.invoke(new ParallelSearch<>(array, 0, array.length - 1, value));
     }
 
     private int searchIndex(T[] array, int from, int to, T value) {
