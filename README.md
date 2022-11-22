@@ -12,3 +12,6 @@
 
 #### Создание ветки из IDEA
 #### Добавил изменения в последний коммит
+#### First change
+#### Second change
+#### Third change
