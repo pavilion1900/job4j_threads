@@ -1,27 +1,13 @@
 package ru.job4j.concurrent;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toList;
 
 public class RolColSum {
-
-    public static class Sums {
-
-        private final int rowSum;
-        private final int colSum;
-
-        public Sums(int rowSum, int colSum) {
-            this.rowSum = rowSum;
-            this.colSum = colSum;
-        }
-
-        public int getRowSum() {
-            return rowSum;
-        }
-
-        public int getColSum() {
-            return colSum;
-        }
-    }
 
     public static Sums[] sum(int[][] matrix) {
         Sums[] sums = new Sums[matrix.length];
@@ -31,13 +17,15 @@ public class RolColSum {
         return sums;
     }
 
-    public static Sums[] asyncSum(int[][] matrix) {
+    public static Sums[] asyncSum(int[][] matrix) throws ExecutionException, InterruptedException {
         Sums[] sums = new Sums[matrix.length];
-        CompletableFuture.runAsync(() -> {
-            for (int i = 0; i < matrix.length; i++) {
-                sums[i] = new Sums(getRowSum(matrix, i), getColumnSum(matrix, i));
-            }
-        });
+        List<CompletableFuture<Sums>> futures = IntStream.range(0, matrix.length)
+                .mapToObj(index -> CompletableFuture.supplyAsync(() ->
+                        new Sums(getRowSum(matrix, index), getColumnSum(matrix, index))))
+                .collect(toList());
+        for (int i = 0; i < futures.size(); i++) {
+            sums[i] = futures.get(i).get();
+        }
         return sums;
     }
 
