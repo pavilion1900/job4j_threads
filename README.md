@@ -17,3 +17,5 @@
 #### First change
 #### Second change
 #### Third change
+
+#### В курсе производилась работа с ветками git.
